@@ -6,21 +6,28 @@ export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  const [isDownloading, setIsDownloading] = useState(false);
   const [videoURL, setVideoURL] = useState<undefined | string>(undefined);
   const [videoBlobURL, setVideoBlobURL] = useState<undefined | string>(
     undefined
   );
 
   const downloadVideo = async () => {
-    const response = await fetch('/api/download', {
-      method: 'POST',
-      body: JSON.stringify({
-        url: videoURL,
-      }),
-    });
-    const video = await response.blob();
-    const videoUrl = URL.createObjectURL(video);
-    setVideoBlobURL(videoUrl);
+    try {
+      setIsDownloading(true);
+      const response = await fetch('/api/download', {
+        method: 'POST',
+        body: JSON.stringify({
+          url: videoURL,
+        }),
+      });
+      const video = await response.blob();
+      const videoUrl = URL.createObjectURL(video);
+      setVideoBlobURL(videoUrl);
+    } catch (error) {
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const captureScreen = async () => {
@@ -48,6 +55,7 @@ export default function Home() {
           onChange={event => setVideoURL(event.target.value)}
           onSearch={downloadVideo}
           enterButton
+          loading={isDownloading}
         />
 
         <video
@@ -56,8 +64,12 @@ export default function Home() {
           width={426}
           height={240}
           controls
-        />
-        <Button onClick={captureScreen}>Capture</Button>
+        >
+          <source src={videoBlobURL} />
+        </video>
+        <Button onClick={captureScreen} disabled={!videoBlobURL}>
+          Capture
+        </Button>
         <canvas ref={canvasRef} style={{ overflow: 'auto' }} />
       </div>
     </Layout>
