@@ -1,15 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button, Input, Layout } from 'antd';
 import styles from '../styles/Home.module.css';
-
-const SPAN = 8;
-const OFFSET = 8;
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const [imageCount, setImageCount] = useState(0);
   const [videoURL, setVideoURL] = useState<undefined | string>(undefined);
   const [videoBlobURL, setVideoBlobURL] = useState<undefined | string>(
     undefined
@@ -54,7 +50,13 @@ export default function Home() {
           enterButton
         />
 
-        <video ref={videoRef} src={videoBlobURL} controls />
+        <video
+          ref={videoRef}
+          src={videoBlobURL}
+          width={426}
+          height={240}
+          controls
+        />
         <Button onClick={captureScreen}>Capture</Button>
         <canvas ref={canvasRef} style={{ overflow: 'auto' }} />
       </div>
